@@ -1,0 +1,22 @@
+{
+  "name": "ang3",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "angular2": "^2.0.0-alpha.18"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "traceur": "0.0.87",
+    "grunt-traceur": "^0.5.2",
+    "grunt-contrib-copy": "^0.8.0",
+    "angular2": "^2.0.0-alpha.18",
+    "grunt-contrib-watch": "^0.6.1"
+  }
+}

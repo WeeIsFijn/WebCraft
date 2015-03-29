@@ -1,0 +1,22 @@
+{
+  "name": "ang3",
+  "version": "0.0.0",
+  "authors": [
+    "Wouter Deferme <wouter.deferme@gmail.com>"
+  ],
+  "main": "frontend/src/index.html",
+  "moduleType": [
+    "es6"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "app/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+  }
+}
