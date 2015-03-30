@@ -1,20 +1,21 @@
-import {WebGL} from 'frontend/src/js/WebGL.js';
+
 import {Point3} from 'frontend/src/js/Point3.js';
 
 export class VisObject{
 
-	constructor(){
+	constructor(gl){
 		this.numberOfSamples = 80;
 		this.radius = 0.2;
 
-		this.gl = WebGL.getInstance().gl;
+		this.gl = gl.gl;
+		this.renderer = gl;
 		this.shaderProgram = this.gl.shaderProgram;
 		this.mvMatrix = mat4.create();
 		this.position = new Point3();
 		mat4.identity( this.mvMatrix );
 
 		this.initBuffers();
-		WebGL.getInstance().addVisObject(this);
+		gl.addVisObject(this);
 	}
 
 	initBuffers(){
@@ -52,17 +53,14 @@ export class VisObject{
 	}
 
 	draw(){
-			if (!this.shaderProgram){
-				this.shaderProgram = WebGL.getInstance().shaderProgram;
-			}
 
 			this.resetMVMatrix();
 			this.translate(1.0, 1.0, -2.0);
 
 			this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.triangleVertexPositionBuffer);
-			this.gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.triangleVertexPositionBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
+			this.gl.vertexAttribPointer(this.renderer.shaderProgram.vertexPositionAttribute, this.triangleVertexPositionBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
 
-			this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.mvMatrix);
+			this.gl.uniformMatrix4fv(this.renderer.shaderProgram.mvMatrixUniform, false, this.mvMatrix);
 
 			this.gl.drawArrays(this.gl.TRIANGLES, 0, this.triangleVertexPositionBuffer.numItems);
 	}

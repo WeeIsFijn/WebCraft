@@ -8,6 +8,7 @@ import 'frontend/src/js/lib/gl-matrix-min.js';
 /* globals
 	mat4: true
  */
+let singleton = Symbol();
 
 export class WebGL{
 	constructor(){
@@ -20,6 +21,7 @@ export class WebGL{
 		this.pMatrix = undefined;
 		this.mvMatrix = mat4.create();
 		this.visObjects = [];
+		this.onLoadDelegate = undefined;
 	}
 
 	start(canvas){
@@ -30,10 +32,16 @@ export class WebGL{
 		this.initShaders();
 		this.initBuffers();
 
+		if(this.onLoadDelegate) {this.onLoadDelegate()};
+
 		this.gl.clearColor(1.0, 1.0, 0.0, 1.0);
     	this.gl.enable(this.gl.DEPTH_TEST);
 
 		this.tick();
+	}
+
+	onload( callback ){
+		this.onLoadDelegate = callback;
 	}
 
 	initGL(){
@@ -134,7 +142,7 @@ export class WebGL{
 
 		//draw here
 		//console.log(this.circle);
-		
+
 		for(var visObject in this.visObjects){
 			this.visObjects[visObject].draw();
 		}
@@ -148,10 +156,15 @@ export class WebGL{
 
 	addVisObject(visObject){
 		this.visObjects.push(visObject);
+		console.log(this.visObjects);
 	}
 
 	static getInstance(){
-		if(!this['instance']){ this['instance'] = new WebGL(); }
-		return this['instance'];
+		//if(!this['instance']){ this['instance'] = new WebGL(); }
+		//return this['instance'];
+		if (!this[singleton]) {
+            this[singleton] = new WebGL();
+        }
+        return this[singleton];
 	}
 }

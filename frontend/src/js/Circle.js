@@ -1,22 +1,21 @@
-import 'frontend/src/js/lib/gl-matrix-min.js';
 
-/* globals
-	mat4: true,
-	vec3: true
-*/
+import {Point3} from 'frontend/src/js/Point3.js';
 
 export class Circle{
 
-	constructor(gl, shaderProgram){
+	constructor(gl, x =0, y =0, z =-1){
 		this.numberOfSamples = 80;
 		this.radius = 0.2;
 
-		this.gl = gl;
-		this.shaderProgram = shaderProgram;
+		this.gl = gl.gl;
+		this.renderer = gl;
+		this.shaderProgram = this.gl.shaderProgram;
 		this.mvMatrix = mat4.create();
+		this.position = new Point3(x, y, z);
 		mat4.identity( this.mvMatrix );
 
 		this.initBuffers();
+		gl.addVisObject(this);
 	}
 
 	initBuffers(){
@@ -26,6 +25,10 @@ export class Circle{
 		// activate the new vertex buffer for editing
 		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.triangleVertexPositionBuffer);
 
+		// define vertices
+		var vertices = [];
+
+		// add vertices here
 		// define vertices
 		var vertices = [];
 
@@ -45,16 +48,19 @@ export class Circle{
 
 		this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertices), this.gl.STATIC_DRAW);
 
-		this.triangleVertexPositionBuffer.itemSize = 3;
-		this.triangleVertexPositionBuffer.numItems = 3*this.numberOfSamples;
+		this.triangleVertexPositionBuffer.itemSize = 3; // verts per item
+		this.triangleVertexPositionBuffer.numItems = 3*this.numberOfSamples; // num of items
 	}
 
 	draw(){
-			console.log(this.shaderProgram);
-			this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.triangleVertexPositionBuffer);
-			this.gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.triangleVertexPositionBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
 
-			this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.mvMatrix);
+			this.resetMVMatrix();
+			this.translate();
+
+			this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.triangleVertexPositionBuffer);
+			this.gl.vertexAttribPointer(this.renderer.shaderProgram.vertexPositionAttribute, this.triangleVertexPositionBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
+
+			this.gl.uniformMatrix4fv(this.renderer.shaderProgram.mvMatrixUniform, false, this.mvMatrix);
 
 			this.gl.drawArrays(this.gl.TRIANGLES, 0, this.triangleVertexPositionBuffer.numItems);
 	}
@@ -63,8 +69,7 @@ export class Circle{
 		mat4.identity(this.mvMatrix);
 	}
 
-	translate(x, y, z){
-		mat4.translate(this.mvMatrix, this.mvMatrix, vec3.fromValues(x, y, z));
+	translate(){
+		mat4.translate(this.mvMatrix, this.mvMatrix, vec3.fromValues(this.position.x, this.position.y, this.position.z));
 	}
-
 }
