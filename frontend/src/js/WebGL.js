@@ -20,8 +20,18 @@ export class WebGL{
 		this.shaderProgram = undefined;
 		this.pMatrix = undefined;
 		this.mvMatrix = mat4.create();
+		this.camera = undefined;
 		this.visObjects = [];
 		this.onLoadDelegate = undefined;
+		this.onTickDelegate = undefined;
+		this.time = {
+			last: new Date().getTime(),
+			getElapsed: function(){
+				var elapsed = new Date().getTime() - this.last;
+				this.last = new Date().getTime();
+				return elapsed;
+			}
+		}
 	}
 
 	start(canvas){
@@ -34,14 +44,19 @@ export class WebGL{
 
 		if(this.onLoadDelegate) {this.onLoadDelegate()};
 
-		this.gl.clearColor(1.0, 1.0, 0.0, 1.0);
+		this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
     	this.gl.enable(this.gl.DEPTH_TEST);
 
 		this.tick();
 	}
 
+	// Make delegates accesible
 	onload( callback ){
 		this.onLoadDelegate = callback;
+	}
+
+	ontick( callback ){
+		this.onTickDelegate = callback;
 	}
 
 	initGL(){
@@ -150,6 +165,7 @@ export class WebGL{
 	}
 
 	tick(){
+		if(WebGL.getInstance().onTickDelegate){ WebGL.getInstance().onTickDelegate(WebGL.getInstance().time.getElapsed() ); }
 		WebGL.getInstance().draw();
 		requestAnimationFrame( WebGL.getInstance().tick );		
 	}
@@ -157,6 +173,15 @@ export class WebGL{
 	addVisObject(visObject){
 		this.visObjects.push(visObject);
 		console.log(this.visObjects);
+	}
+
+	setCamera(camera){
+		this.camera = camera;
+	}
+
+	// Convert absolute world coordinates to relative-to-camera coördinates
+	absToRel(mvMatrix){
+		if(this.camera){ this.camera.absToRel(mvMatrix); }
 	}
 
 	static getInstance(){

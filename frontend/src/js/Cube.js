@@ -53,6 +53,7 @@ export class Cube{
 
 			this.resetMVMatrix();
 			this.translate();
+			this.renderer.absToRel(this.mvMatrix);
 
 			this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.squareVertexPositionBuffer);
 			this.gl.vertexAttribPointer(this.renderer.shaderProgram.vertexPositionAttribute, this.squareVertexPositionBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
