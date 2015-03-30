@@ -99,8 +99,16 @@ export class WebGL{
 		this.shaderProgram.vertexPositionAttribute = this.gl.getAttribLocation(this.shaderProgram, 'aVertexPosition');
 		this.gl.enableVertexAttribArray(this.shaderProgram.vertexPositionAttribute);
 
+		this.shaderProgram.vertexNormalAttribute = this.gl.getAttribLocation(this.shaderProgram, "aVertexNormal");
+        this.gl.enableVertexAttribArray(this.shaderProgram.vertexNormalAttribute);
+
 		this.shaderProgram.pMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, 'uPMatrix');
 		this.shaderProgram.mvMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, 'uMVMatrix');
+		this.shaderProgram.nMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, "uNMatrix");
+        this.shaderProgram.useLightingUniform = this.gl.getUniformLocation(this.shaderProgram, "uUseLighting");
+        this.shaderProgram.ambientColorUniform = this.gl.getUniformLocation(this.shaderProgram, "uAmbientColor");
+        this.shaderProgram.lightingDirectionUniform = this.gl.getUniformLocation(this.shaderProgram, "uLightingDirection");
+        this.shaderProgram.directionalColorUniform = this.gl.getUniformLocation(this.shaderProgram, "uDirectionalColor");
 
 
 		this.pMatrix = mat4.create();
@@ -144,6 +152,12 @@ export class WebGL{
 	setMatrixUniforms(){
 		this.gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, this.pMatrix);
     	this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.mvMatrix);
+    	var normalMatrix = mat3.create();
+    	var invertedMatrix = mat4.create();
+    	mat4.invert(invertedMatrix, this.mvMatrix);
+	    mat3.fromMat4(normalMatrix, invertedMatrix);
+	    mat3.transpose(normalMatrix, normalMatrix);
+	    this.gl.uniformMatrix3fv(this.shaderProgram.nMatrixUniform, false, normalMatrix);
 	}
 
 	draw(){
@@ -161,6 +175,7 @@ export class WebGL{
 		for(var visObject in this.visObjects){
 			this.visObjects[visObject].draw();
 		}
+
 		
 	}
 
@@ -172,7 +187,6 @@ export class WebGL{
 
 	addVisObject(visObject){
 		this.visObjects.push(visObject);
-		console.log(this.visObjects);
 	}
 
 	setCamera(camera){

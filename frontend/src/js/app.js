@@ -13,7 +13,31 @@ window.onload = function(e){
 	webGL.onload(function(){
 		console.log("loaded")
 		//var circle = new Circle(webGL, 0, 0, -5);
-		var circle2 = new Cube(webGL, 1, 0, -5);
+		var circle1 = new Cube(webGL, 3, -4, -10,2);
+		var circle2 = new Cube(webGL, 3, -2, -8,2);
+		var circle3 = new Cube(webGL, 3, 0, -6,2);
+		var circle4 = new Cube(webGL, 3, 2, -4,2);
+
+		var circle1 = new Cube(webGL, 1, -4, -10,2);
+		var circle2 = new Cube(webGL, 1, -2, -8,2);
+		var circle3 = new Cube(webGL, 1, 0, -6,2);
+		var circle4 = new Cube(webGL, 1, 2, -4,2);
+
+		var circle1 = new Cube(webGL, -1, -4, -10,2);
+		var circle2 = new Cube(webGL, -1, -2, -8,2);
+		var circle3 = new Cube(webGL, -1, 0, -6,2);
+		var circle4 = new Cube(webGL, -1, 2, -4,2);
+
+		var circle1 = new Cube(webGL, 5, -4, -10,2);
+		var circle2 = new Cube(webGL, 5, -2, -8,2);
+		var circle3 = new Cube(webGL, 5, 0, -6,2);
+		var circle4 = new Cube(webGL, 5, 2, -4,2);
+
+		var circle1 = new Cube(webGL, 7, -4, -10,2);
+		var circle2 = new Cube(webGL, 7, -2, -8,2);
+		var circle3 = new Cube(webGL, 7, 0, -6,2);
+		var circle4 = new Cube(webGL, 7, 2, -4,2);
+
 		cam = new Camera(webGL, 1.0, 1.0, 4.0);
 		
 
@@ -21,7 +45,7 @@ window.onload = function(e){
 
 	// handle simple keyboard input
 	var fMoveForward = 0.0;
-	var fRotate = 0.0
+	var fRotate = 0.0;
 	document.addEventListener("keydown", function(){
 		if( event.keyCode == 38) {
 			fMoveForward = -1.0;
@@ -48,8 +72,8 @@ window.onload = function(e){
 
 	webGL.ontick(function(delta){
 		//console.log('tick ', delta);
-		cam.move(0.0, 0.0, fMoveForward*delta*0.005);
-		cam.turn(0.0, fRotate*delta*0.001, 0.0)
+		cam.move(0.0, 0.0, fMoveForward*delta*0.05);
+		cam.turn(0.0, fRotate*delta*0.003, 0.0)
 
 	});
 

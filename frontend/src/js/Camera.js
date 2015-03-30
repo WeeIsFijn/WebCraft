@@ -15,9 +15,9 @@ export class Camera{
 	}
 
 	move( dX, dY, dZ ){
-		this.position.x += dX;
-		this.position.y += dY;
-		this.position.z += dZ;
+		this.position.x += -dZ*Math.sin(this.rotation.y);
+		this.position.y += 0;
+		this.position.z += dZ*Math.cos(this.rotation.y);
 	}
 
 	turn( drx, dry, drz){
@@ -27,9 +27,11 @@ export class Camera{
 	}
 
 	absToRel(mvMatrix){
-		mat4.translate(mvMatrix, mvMatrix, vec3.fromValues(-this.position.x, -this.position.y, -this.position.z));
+		
 		mat4.rotate(mvMatrix, mvMatrix, this.rotation.x, [1, 0, 0]);
 		mat4.rotate(mvMatrix, mvMatrix, this.rotation.y, [0, 1, 0]);
-		mat4.rotate(mvMatrix, mvMatrix, this.rotation.z, [0, 0, 1]);
+		//mat4.rotate(mvMatrix, mvMatrix, -this.rotation.z, [0, 0, 1]);
+		mat4.translate(mvMatrix, mvMatrix, vec3.fromValues(-this.position.x, -this.position.y, -this.position.z));
+		
 	}
 }
