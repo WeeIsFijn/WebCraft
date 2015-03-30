@@ -1,24 +1,30 @@
 import {Circle} from 'frontend/src/js/Circle.js';
 import 'frontend/src/js/lib/gl-matrix-min.js';
 
+/*
+ *	WebGL class, responsible for rendering. Singleton.
+ */
+
 /* globals
 	mat4: true
  */
 
 export class WebGL{
-	constructor(canvas){
-		console.log('constructed');
-		this.canvas = canvas;
+	constructor(){
 
+		this.canvas = undefined;
 
 		this.gl = undefined;
 		this.triangleVertexPositionBuffer = undefined;
 		this.shaderProgram = undefined;
 		this.pMatrix = undefined;
 		this.mvMatrix = mat4.create();
+		this.visObjects = [];
 	}
 
-	start(){
+	start(canvas){
+		this.canvas = canvas;
+
 		this.initGL();
 		
 		this.initShaders();
@@ -27,7 +33,6 @@ export class WebGL{
 		this.gl.clearColor(1.0, 1.0, 0.0, 1.0);
     	this.gl.enable(this.gl.DEPTH_TEST);
 
-    	this.circle = new Circle(this.gl, this.shaderProgram);
 		this.tick();
 	}
 
@@ -74,7 +79,7 @@ export class WebGL{
 		this.shaderProgram.pMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, 'uPMatrix');
 		this.shaderProgram.mvMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, 'uMVMatrix');
 
-		this.shaderProgram = this.shaderProgram;
+
 		this.pMatrix = mat4.create();
 	}
 
@@ -127,16 +132,26 @@ export class WebGL{
 		this.pMatrix = mat4.perspective(this.pMatrix, 45, this.gl.viewportWidth / this.gl.viewportHeight, 0.1, 100.0);
 		this.setMatrixUniforms();
 
-				//draw here
+		//draw here
 		//console.log(this.circle);
-		this.circle.resetMVMatrix();
-		this.circle.translate(1.0, 1.0, -5.0);
-		this.circle.draw();
+		
+		for(var visObject in this.visObjects){
+			this.visObjects[visObject].draw();
+		}
+		
 	}
 
 	tick(){
-		//console.log('tick');
-		this.draw();
-		window.requestAnimationFrame( this.tick );
+		WebGL.getInstance().draw();
+		requestAnimationFrame( WebGL.getInstance().tick );		
+	}
+
+	addVisObject(visObject){
+		this.visObjects.push(visObject);
+	}
+
+	static getInstance(){
+		if(!this['instance']){ this['instance'] = new WebGL(); }
+		return this['instance'];
 	}
 }
