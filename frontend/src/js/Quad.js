@@ -1,7 +1,7 @@
 
 import {Point3} from 'frontend/src/js/Point3.js';
 
-export class Cube{
+export class Quad{
 
 	constructor(gl, x =0, y =0, z =-1, width =1){
 		this.gl = gl.gl;
@@ -18,10 +18,10 @@ export class Cube{
 
 	initBuffers(){
 		// create new vertex buffer
-		this.cubeVertexPositionBuffer = this.gl.createBuffer();
+		this.squareVertexPositionBuffer = this.gl.createBuffer();
 
 		// activate the new vertex buffer for editing
-		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.cubeVertexPositionBuffer);
+		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.squareVertexPositionBuffer);
 
 		// define vertices
 		var vertices = [];
@@ -45,8 +45,8 @@ export class Cube{
 		
 		this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertices), this.gl.STATIC_DRAW);
 
-		this.cubeVertexPositionBuffer.itemSize = 3; // verts per item
-		this.cubeVertexPositionBuffer.numItems = 4; // num of items
+		this.squareVertexPositionBuffer.itemSize = 3; // verts per item
+		this.squareVertexPositionBuffer.numItems = 4; // num of items
 	}
 
 	draw(){
@@ -55,12 +55,12 @@ export class Cube{
 			this.translate();
 			this.renderer.absToRel(this.mvMatrix);
 
-			this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.cubeVertexPositionBuffer);
-			this.gl.vertexAttribPointer(this.renderer.shaderProgram.vertexPositionAttribute, this.cubeVertexPositionBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
+			this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.squareVertexPositionBuffer);
+			this.gl.vertexAttribPointer(this.renderer.shaderProgram.vertexPositionAttribute, this.squareVertexPositionBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
 
 			this.gl.uniformMatrix4fv(this.renderer.shaderProgram.mvMatrixUniform, false, this.mvMatrix);
 
-			this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, this.cubeVertexPositionBuffer.numItems);
+			this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, this.squareVertexPositionBuffer.numItems);
 	}
 
 	resetMVMatrix(){
