@@ -31,7 +31,7 @@ export class WebGL{
 				this.last = new Date().getTime();
 				return elapsed;
 			}
-		}
+		};
 	}
 
 	start(canvas){
@@ -42,7 +42,7 @@ export class WebGL{
 		//this.initShaders();
 		//this.initBuffers();
 
-		if(this.onLoadDelegate) {this.onLoadDelegate()};
+		if(this.onLoadDelegate) {this.onLoadDelegate()}
 
 		this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
     	this.gl.enable(this.gl.DEPTH_TEST);

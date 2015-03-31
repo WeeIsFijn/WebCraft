@@ -28,10 +28,10 @@ export class Cube{
 	initShaders(){
 		var shader = new Shader(this.gl);
 
-		var fragmentShader = shader.compileFromScript('shader-fs');
-		var vertexShader = shader.compileFromScript('shader-vs');
-
-		this.shaderProgram = shader.generateProgram(vertexShader, fragmentShader);
+		var fragmentShader = shader.compileFromScript('shader-fs-light');
+		var vertexShader = shader.compileFromScript('shader-vs-light');
+		
+		this.shaderProgram = shader.generateProgram(shader.compileFromScript('shader-vs-light'), shader.compileFromScript('shader-fs-light'));
 
 		this.shaderProgram.vertexPositionAttribute = shader.getAttributeLocation('aVertexPosition');
 		this.shaderProgram.pMatrixUniform = shader.getUniformLocation('uPMatrix');
@@ -136,7 +136,7 @@ export class Cube{
         this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeVertexIndices), this.gl.STATIC_DRAW);
         this.cubeVertexIndexBuffer.itemSize = 1;
         this.cubeVertexIndexBuffer.numItems = 36;
-/*
+
         this.cubeVertexNormalBuffer = this.gl.createBuffer();
 	    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.cubeVertexNormalBuffer);
 	    var vertexNormals = [
@@ -174,12 +174,12 @@ export class Cube{
 	      -1.0,  0.0,  0.0,
 	      -1.0,  0.0,  0.0,
 	      -1.0,  0.0,  0.0,
-	      -1.0,  0.0,  0.0,
-	    ];
+	      -1.0,  0.0,  0.0
+	    	];
 	    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertexNormals), this.gl.STATIC_DRAW);
 	    this.cubeVertexNormalBuffer.itemSize = 3;
 	    this.cubeVertexNormalBuffer.numItems = 24;
-	    */
+	    
 	}
 
 	setMatrixUniforms(){
@@ -189,6 +189,7 @@ export class Cube{
 	}
 
 	draw(){
+			if(!this.shader.getProgram()){ return 0; }
 			this.shader.useProgram();
 			
 			this.pMatrix = mat4.perspective(this.pMatrix, 45, this.gl.viewportWidth / this.gl.viewportHeight, 0.1, 100.0);
@@ -214,24 +215,33 @@ export class Cube{
 
 			this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.cubeVertexIndexBuffer);
 
-			/*
+			
 			// -- Lighting shader --
 			// 
 			// Bind vertex normals to shader attribute
 			this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.cubeVertexNormalBuffer);
-    		this.gl.vertexAttribPointer(this.renderer.shaderProgram.vertexNormalAttribute, this.cubeVertexNormalBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
+    		this.gl.vertexAttribPointer(this.shader.getAttributeLocation('aVertexNormal'), 
+    			this.cubeVertexNormalBuffer.itemSize, 
+    			this.gl.FLOAT, 
+    			false, 
+    			0, 
+    			0);
+
     		// LightingEnabled shader uniform
-    		this.gl.uniform1i(this.renderer.shaderProgram.useLightingUniform, true);
+
+    		this.gl.uniform1i(this.shader.getUniformLocation('uUseLighting'), true);
     		// Push lighting color to shader uniform
-    		this.gl.uniform3f(this.renderer.shaderProgram.ambientColorUniform,1.0, 1.0, 1.0);
+    		this.gl.uniform3f(this.shader.getUniformLocation('uAmbientColor'),0.2, 0.2, 0.2);
     		// Normalize lighting direction and pass to shader as uniform (vec3->Float32Array->uniform3fv instead 
     		// of uniform3f)
-    		var lightingDirection=vec3.fromValues(-1.0, -1.0, -1.0);
+    		var lightingDirection=vec3.fromValues(0.5, 0.2, -0.8);
+    		
     		vec3.normalize(lightingDirection, lightingDirection);
-    		this.gl.uniform3fv(this.renderer.shaderProgram.lightingDirectionUniform, lightingDirection);
+    		
+    		this.gl.uniform3fv(this.shader.getUniformLocation('uLightingDirection'), lightingDirection);
     		// push lighting color to shader as uniform
-    		this.gl.uniform3f(this.renderer.shaderProgram.directionalColorUniform, 1.0, 1.0, 1.0);
-			*/
+    		this.gl.uniform3f(this.shader.getUniformLocation('uDirectionalColor'), 0.5, 0.5, 0.5);
+			
 			this.gl.drawElements(this.gl.TRIANGLES, this.cubeVertexIndexBuffer.numItems, this.gl.UNSIGNED_SHORT, 0);
 	}
 

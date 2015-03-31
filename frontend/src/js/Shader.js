@@ -7,6 +7,8 @@ export class Shader{
 	}
 
 	generateProgram(vertexSource, fragmentSource){
+		//if(vertexSource===null || fragmentSource === null) { return undefined; }
+		console.log('shader:', fragmentSource);
 		this.shaderProgram = this.gl.createProgram();
 		this.gl.attachShader(this.shaderProgram, vertexSource);
 		this.gl.attachShader(this.shaderProgram, fragmentSource);
@@ -29,7 +31,7 @@ export class Shader{
 		var attr = this.gl.getAttribLocation(this.shaderProgram, attributeString);
 		this.gl.enableVertexAttribArray(attr);
 
-		return attr;
+		return this.gl.getAttribLocation(this.shaderProgram, attributeString);
 	}
 
 	getUniformLocation(uniformString){
