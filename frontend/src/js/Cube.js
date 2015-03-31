@@ -18,10 +18,65 @@ export class Cube{
 		mat4.identity( this.mvMatrix );
 
 		this.initBuffers();
+		this.initShaders();
+
 		gl.addVisObject(this);
 	}
 
+	initShaders(){
+		var fragmentShader = this.renderer.getShader(this.gl, 'shader-fs');
+		var vertexShader = this.renderer.getShader(this.gl, 'shader-vs');
+
+		this.shaderProgram = this.gl.createProgram();
+		this.gl.attachShader(this.shaderProgram, vertexShader);
+		this.gl.attachShader(this.shaderProgram, fragmentShader);
+		this.gl.linkProgram(this.shaderProgram);
+		this.gl.useProgram(this.shaderProgram);
+
+		this.shaderProgram.vertexPositionAttribute = this.gl.getAttribLocation(this.shaderProgram, 'aVertexPosition');
+		this.gl.enableVertexAttribArray(this.shaderProgram.vertexPositionAttribute);
+
+		this.shaderProgram.pMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, 'uPMatrix');
+		this.shaderProgram.mvMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, 'uMVMatrix');
+
+		this.pMatrix = mat4.create();
+	
+	}
+
 	initBuffers(){
+		/*
+		// create new vertex buffer
+		this.cubeVertexPositionBuffer = this.gl.createBuffer();
+
+		// activate the new vertex buffer for editing
+		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.cubeVertexPositionBuffer);
+
+		// define vertices
+		var vertices = [];
+
+		vertices.push( this.position.x - this.width/2 );
+		vertices.push( this.position.y + this.width/2 );
+		vertices.push( this.position.z );
+
+		vertices.push( this.position.x + this.width/2 );
+		vertices.push( this.position.y + this.width/2 );
+		vertices.push( this.position.z );
+
+		vertices.push( this.position.x - this.width/2 );
+		vertices.push( this.position.y - this.width/2 );
+		vertices.push( this.position.z );
+
+		vertices.push( this.position.x + this.width/2 );
+		vertices.push( this.position.y - this.width/2 );
+		vertices.push( this.position.z );
+
+		
+		this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertices), this.gl.STATIC_DRAW);
+
+		this.cubeVertexPositionBuffer.itemSize = 3; // verts per item
+		this.cubeVertexPositionBuffer.numItems = 4; // num of items
+		*/
+		
 		// create new vertex buffer
 		this.cubeVertexPositionBuffer = this.gl.createBuffer();
 
@@ -81,7 +136,7 @@ export class Cube{
         this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeVertexIndices), this.gl.STATIC_DRAW);
         this.cubeVertexIndexBuffer.itemSize = 1;
         this.cubeVertexIndexBuffer.numItems = 36;
-
+/*
         this.cubeVertexNormalBuffer = this.gl.createBuffer();
 	    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.cubeVertexNormalBuffer);
 	    var vertexNormals = [
@@ -124,31 +179,36 @@ export class Cube{
 	    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertexNormals), this.gl.STATIC_DRAW);
 	    this.cubeVertexNormalBuffer.itemSize = 3;
 	    this.cubeVertexNormalBuffer.numItems = 24;
+	    */
 	}
 
 	setMatrixUniforms(){
-		//this.gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, this.pMatrix);
-    	//this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.mvMatrix);
+		this.gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, this.pMatrix);
+    	this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.mvMatrix);
     	
 	}
 
 	draw(){
 
+			
+			this.pMatrix = mat4.perspective(this.pMatrix, 45, this.gl.viewportWidth / this.gl.viewportHeight, 0.1, 100.0);
+			this.setMatrixUniforms();
 			this.resetMVMatrix();
 			this.renderer.absToRel(this.mvMatrix);
 			this.translate();
 			this.scale();
 
 			//NEW
-			//this.setMatrixUniforms();
+			//
 
 			this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.cubeVertexPositionBuffer);
-			this.gl.vertexAttribPointer(this.renderer.shaderProgram.vertexPositionAttribute, this.cubeVertexPositionBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
+			this.gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.cubeVertexPositionBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
 
-			this.gl.uniformMatrix4fv(this.renderer.shaderProgram.mvMatrixUniform, false, this.mvMatrix);
+			this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.mvMatrix);
 
 			this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.cubeVertexIndexBuffer);
 
+			/*
 			// -- Lighting shader --
 			// 
 			// Bind vertex normals to shader attribute
@@ -165,7 +225,7 @@ export class Cube{
     		this.gl.uniform3fv(this.renderer.shaderProgram.lightingDirectionUniform, lightingDirection);
     		// push lighting color to shader as uniform
     		this.gl.uniform3f(this.renderer.shaderProgram.directionalColorUniform, 1.0, 1.0, 1.0);
-
+			*/
 			this.gl.drawElements(this.gl.TRIANGLES, this.cubeVertexIndexBuffer.numItems, this.gl.UNSIGNED_SHORT, 0);
 	}
 

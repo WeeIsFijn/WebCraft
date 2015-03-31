@@ -39,8 +39,8 @@ export class WebGL{
 
 		this.initGL();
 		
-		this.initShaders();
-		this.initBuffers();
+		//this.initShaders();
+		//this.initBuffers();
 
 		if(this.onLoadDelegate) {this.onLoadDelegate()};
 
@@ -166,8 +166,8 @@ export class WebGL{
 
 
 		
-		this.pMatrix = mat4.perspective(this.pMatrix, 45, this.gl.viewportWidth / this.gl.viewportHeight, 0.1, 100.0);
-		this.setMatrixUniforms();
+		//this.pMatrix = mat4.perspective(this.pMatrix, 45, this.gl.viewportWidth / this.gl.viewportHeight, 0.1, 100.0);
+		//this.setMatrixUniforms();
 
 		//draw here
 		//console.log(this.circle);
