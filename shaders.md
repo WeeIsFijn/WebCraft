@@ -33,3 +33,12 @@ myShader.getVertexAttribute('aVertexPosition');
 myShader.setUniform('uMVMatrix');
 myShader.getUniform('uMVMatrix');
 ```
+OR, MAY BE BETTER TO DO:
+
+```js
+myShader.getVertexAttribute('aVertexPosition');
+myShader.getUniform('uMVMatrix');
+```
+
+
+
