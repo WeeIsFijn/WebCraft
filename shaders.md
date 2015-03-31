@@ -17,3 +17,19 @@ var shaderProgram = myShader.generateProgram(vertexSource, fragmentSource); // s
 // or
 var shaderProgram = myShader.getProgram();
 ```
+
+- Should contain a static helper class to read shader source from <script>
+
+```js
+var vertShadString = Shader.stringFromScript(scriptTag);
+```
+
+- Should link javascript variables to GLSL variables
+
+```js
+myShader.setVertexAttribute('aVertexPosition');
+myShader.getVertexAttribute('aVertexPosition');
+
+myShader.setUniform('uMVMatrix');
+myShader.getUniform('uMVMatrix');
+```
