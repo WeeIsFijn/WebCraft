@@ -94,6 +94,7 @@ export class WebGL{
 		this.gl.attachShader(this.shaderProgram, vertexShader);
 		this.gl.attachShader(this.shaderProgram, fragmentShader);
 		this.gl.linkProgram(this.shaderProgram);
+		
 		this.gl.useProgram(this.shaderProgram);
 
 		this.shaderProgram.vertexPositionAttribute = this.gl.getAttribLocation(this.shaderProgram, 'aVertexPosition');

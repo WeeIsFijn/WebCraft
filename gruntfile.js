@@ -72,7 +72,7 @@ module.exports = function(grunt){
         options: {
           port: 9000,
           base: 'frontend/build/',
-          open: false,
+          open: true,
           livereload: true,
           hostname: 'localhost'
         }

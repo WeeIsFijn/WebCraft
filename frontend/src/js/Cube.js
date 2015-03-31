@@ -1,5 +1,6 @@
 
 import {Point3} from 'frontend/src/js/Point3.js';
+import {Shader} from 'frontend/src/js/Shader.js';
 
 /* globals
 	mat4: true,
@@ -11,34 +12,32 @@ export class Cube{
 	constructor(gl, x =0, y =0, z =-1, width =1){
 		this.gl = gl.gl;
 		this.renderer = gl;
-		this.shaderProgram = this.gl.shaderProgram;
+		//this.shaderProgram = this.gl.shaderProgram;
 		this.mvMatrix = mat4.create();
 		this.position = new Point3(x, y, z);
 		this.width = width;
 		mat4.identity( this.mvMatrix );
 
-		this.initBuffers();
 		this.initShaders();
+		this.initBuffers();
+		
 
 		gl.addVisObject(this);
 	}
 
 	initShaders(){
-		var fragmentShader = this.renderer.getShader(this.gl, 'shader-fs');
-		var vertexShader = this.renderer.getShader(this.gl, 'shader-vs');
+		var shader = new Shader(this.gl);
 
-		this.shaderProgram = this.gl.createProgram();
-		this.gl.attachShader(this.shaderProgram, vertexShader);
-		this.gl.attachShader(this.shaderProgram, fragmentShader);
-		this.gl.linkProgram(this.shaderProgram);
-		this.gl.useProgram(this.shaderProgram);
+		var fragmentShader = shader.compileFromScript('shader-fs');
+		var vertexShader = shader.compileFromScript('shader-vs');
 
-		this.shaderProgram.vertexPositionAttribute = this.gl.getAttribLocation(this.shaderProgram, 'aVertexPosition');
-		this.gl.enableVertexAttribArray(this.shaderProgram.vertexPositionAttribute);
+		this.shaderProgram = shader.generateProgram(vertexShader, fragmentShader);
 
-		this.shaderProgram.pMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, 'uPMatrix');
-		this.shaderProgram.mvMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, 'uMVMatrix');
-
+		this.shaderProgram.vertexPositionAttribute = shader.getAttributeLocation('aVertexPosition');
+		this.shaderProgram.pMatrixUniform = shader.getUniformLocation('uPMatrix');
+		this.shaderProgram.mvMatrixUniform = shader.getUniformLocation('uMVMatrix');
+		
+		this.shader = shader;
 		this.pMatrix = mat4.create();
 	
 	}
@@ -79,6 +78,7 @@ export class Cube{
 		
 		// create new vertex buffer
 		this.cubeVertexPositionBuffer = this.gl.createBuffer();
+		this.cubeVertexIndexBuffer = this.gl.createBuffer();
 
 		// activate the new vertex buffer for editing
 		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.cubeVertexPositionBuffer);
@@ -189,7 +189,7 @@ export class Cube{
 	}
 
 	draw(){
-
+			this.shader.useProgram();
 			
 			this.pMatrix = mat4.perspective(this.pMatrix, 45, this.gl.viewportWidth / this.gl.viewportHeight, 0.1, 100.0);
 			this.setMatrixUniforms();
@@ -202,9 +202,15 @@ export class Cube{
 			//
 
 			this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.cubeVertexPositionBuffer);
-			this.gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, this.cubeVertexPositionBuffer.itemSize, this.gl.FLOAT, false, 0, 0);
+			
+			this.gl.vertexAttribPointer(this.shader.getAttributeLocation('aVertexPosition'), 
+				this.cubeVertexPositionBuffer.itemSize, 
+				this.gl.FLOAT, 
+				false, 
+				0, 
+				0);
 
-			this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.mvMatrix);
+			this.gl.uniformMatrix4fv(this.shader.getUniformLocation('mvMatrixUniform'), false, this.mvMatrix);
 
 			this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.cubeVertexIndexBuffer);
 
