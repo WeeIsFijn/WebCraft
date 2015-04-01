@@ -72,7 +72,7 @@ window.onload = function(e){
 		//console.log('tick ', delta);
 		cDelta += delta;
 		cam.move(0.0, 0.0, fMoveForward*delta*0.05);
-		cam.turn(0.0, fRotate*delta*0.003, 0.0);
+		cam.turn(0.0, fRotate*delta*0.03, 0.0);
 		f.position.y = -18 + 0.5 * Math.sin(cDelta/180/5);
 
 	});
@@ -205,7 +205,7 @@ window.onload = function(e){
 
 
 	webGL.ontick(function(delta){
-		cam.move(0.0, 0.0, fMoveForward*delta*0.05);
+		cam.move(0.0, 0.0, fMoveForward*delta*0.01);
 		cam.turn(0.0, fRotate*delta*0.003, 0.0);
 	});
 
