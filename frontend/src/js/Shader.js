@@ -4,17 +4,22 @@ export class Shader{
 		this.gl = gl;
 
 		this.shaderProgram = undefined;
+		this.onCreatedDelegate = undefined;
 	}
 
 	generateProgram(vertexSource, fragmentSource){
 		//if(vertexSource===null || fragmentSource === null) { return undefined; }
-		console.log('shader:', fragmentSource);
 		this.shaderProgram = this.gl.createProgram();
 		this.gl.attachShader(this.shaderProgram, vertexSource);
 		this.gl.attachShader(this.shaderProgram, fragmentSource);
 		this.gl.linkProgram(this.shaderProgram);
 
+		if(this.onCreatedDelegate){this.onCreatedDelegate();}
 		return this.shaderProgram;
+	}
+
+	onCreated( callback ){
+		this.onCreatedDelegate = callback;
 	}
 
 	getProgram(){

@@ -9,13 +9,14 @@ import {Shader} from 'frontend/src/js/Shader.js';
  */
 export class Cube{
 
-	constructor(gl, x =0, y =0, z =-1, width =1){
+	constructor(gl, x =0, y =0, z =-1, width =1, shader){
 		this.gl = gl.gl;
 		this.renderer = gl;
 		//this.shaderProgram = this.gl.shaderProgram;
 		this.mvMatrix = mat4.create();
 		this.position = new Point3(x, y, z);
 		this.width = width;
+		this.shader = shader;
 		mat4.identity( this.mvMatrix );
 
 		this.initShaders();
@@ -26,20 +27,24 @@ export class Cube{
 	}
 
 	initShaders(){
-		var shader = new Shader(this.gl);
+		// If a shader has been passed at object creation, we're not going to compile it
+		if(!this.shader){
+			var shader = new Shader(this.gl);
 
-		var fragmentShader = shader.compileFromScript('shader-fs-light');
-		var vertexShader = shader.compileFromScript('shader-vs-light');
-		
-		this.shaderProgram = shader.generateProgram(shader.compileFromScript('shader-vs-light'), shader.compileFromScript('shader-fs-light'));
+			var fragmentShader = shader.compileFromScript('shader-fs-light');
+			var vertexShader = shader.compileFromScript('shader-vs-light');
+			
+			shader.generateProgram(shader.compileFromScript('shader-vs-light'), shader.compileFromScript('shader-fs-light'));
 
-		this.shaderProgram.vertexPositionAttribute = shader.getAttributeLocation('aVertexPosition');
-		this.shaderProgram.pMatrixUniform = shader.getUniformLocation('uPMatrix');
-		this.shaderProgram.mvMatrixUniform = shader.getUniformLocation('uMVMatrix');
+			this.shader = shader;
+		}
+
+		this.shaderProgram = this.shader.getProgram();
+		this.shaderProgram.vertexPositionAttribute = this.shader.getAttributeLocation('aVertexPosition');
+		this.shaderProgram.pMatrixUniform = this.shader.getUniformLocation('uPMatrix');
+		this.shaderProgram.mvMatrixUniform = this.shader.getUniformLocation('uMVMatrix');
 		
-		this.shader = shader;
-		this.pMatrix = mat4.create();
-	
+		this.pMatrix = mat4.create();	
 	}
 
 	initBuffers(){
