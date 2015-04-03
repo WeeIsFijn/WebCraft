@@ -8,7 +8,9 @@
  * You can pass in a random number generator object if you like.
  * It is assumed to have a random() method.
  */
-export function SimplexNoise(r) {
+(function(e){
+
+function SimplexNoise(r) {
   if (r == undefined) r = Math;
   this.grad3 = [[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0], 
                                  [1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1], 
@@ -177,3 +179,4 @@ SimplexNoise.prototype.noise3d = function(xin, yin, zin) {
   // The result is scaled to stay just inside [-1,1] 
   return 32.0*(n0 + n1 + n2 + n3); 
 };
+})(this);

@@ -44,7 +44,7 @@ export class WebGL{
 
 		if(this.onLoadDelegate) {this.onLoadDelegate()}
 
-		this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+		this.gl.clearColor(1.0, 1.0, 1.0, 1.0);
     	this.gl.enable(this.gl.DEPTH_TEST);
 
 		this.tick();
