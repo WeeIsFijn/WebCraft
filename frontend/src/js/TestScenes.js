@@ -203,10 +203,28 @@ window.onload = function(e){
 		fRotate = 0.0;
 	});
 
+	var lastPageX, lastPageY;
+	var fRotateY = 0;
+	var fRotateX = 0;
+	document.addEventListener('mousemove', function(event){
+		var e = event || window.event;
+
+		if(!lastPageX){ lastPageX = e.pageX; return; }
+		if(!lastPageY){ lastPageY = e.pageY; return; }
+
+		fRotateY = ( lastPageX - e.pageX );
+		fRotateX = ( lastPageY - e.pageY );
+		lastPageX = e.pageX;
+		lastPageY = e.pageY;
+		console.log('mouse move! ', fRotateY);
+
+	});
+
 
 	webGL.ontick(function(delta){
 		cam.move(0.0, 0.0, fMoveForward*delta*0.01);
-		cam.turn(0.0, fRotate*delta*0.003, 0.0);
+		cam.turn(-fRotateX*delta*0.0001, -fRotateY*delta*0.0001, 0.0);
+		fRotateX = 0; fRotateY = 0;
 	});
 
 	webGL.start(document.getElementById('GLCanvas'));

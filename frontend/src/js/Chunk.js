@@ -45,15 +45,17 @@ export class Chunk{
     this.blockArraySize = size;
     //var noiseData = new SimplexNoise();
     
+
     for(var c=0; c<size*size*size; c++){
       var z = Math.floor(c/ (size*size));
       var y = Math.floor( (c- z * size * size) / (size) );
       var x = c - y * size - z * size * size;
       //console.log('xyz: ', [x, y, z]);
-
+      
       this.blockArray.push(noise.perlin3(x/20.0, y/20.0, z/20.0));
     }
 
+	
     /*
 
     for(var z=0; z<this.blockArraySize; z++){
@@ -169,7 +171,7 @@ export class Chunk{
 
   initBuffers(){
     var SOLIDLIMIT = 0.0;
-    var CHUNKSIZE = 4.0;
+    var CHUNKSIZE = 10.0;
 
     this.generateBlockArray(CHUNKSIZE, 0);
 
@@ -197,16 +199,16 @@ export class Chunk{
       var y = Math.floor( (c- z * CHUNKSIZE * CHUNKSIZE) / (CHUNKSIZE) );
       var x = c - y * CHUNKSIZE - z * CHUNKSIZE * CHUNKSIZE;
       
-      x = x/1.1;
-      y = y/1.1;
-      z = z/1.1;
+      x = x/1.0;
+      y = y/1.0;
+      z = z/1.0;
 
-      console.log('coord', [x, y, z]);
-      console.log('block:', this.blockArray[c]);
+      //console.log('coords, ', [x, y, z]);
+      
           if(this.blockArray[c]<SOLIDLIMIT){
             //element is 'air', check neighbours
             
-            if(this.blockArray[c]>=SOLIDLIMIT){
+            if(this.blockArray[c+1]>=SOLIDLIMIT && (x+1) < CHUNKSIZE){
               //vertices = vertices.concat(this.getPlaneVerticesXn(x,y,z));
               //cubeVertexIndices = this.addVertexIndices(cubeVertexIndices);
               //vertexNormals = this.addVertexNormal(vertexNormals, 1.0, 0.0, 0.0);
@@ -220,7 +222,7 @@ export class Chunk{
               cubeVertexIndicesIndex += 6;
 
             }
-            if(this.blockArray[c]>=SOLIDLIMIT){
+            if(this.blockArray[c-1]>=SOLIDLIMIT && (x-1) >= 0){
               //vertices = vertices.concat(this.getPlaneVerticesXp(x,y,z));
               //cubeVertexIndices = this.addVertexIndices(cubeVertexIndices);
               //vertexNormals = this.addVertexNormal(vertexNormals, -1.0, 0.0, 0.0);
@@ -233,7 +235,7 @@ export class Chunk{
               vertexNormalsIndex += 3*4;
               cubeVertexIndicesIndex += 6;
             }
-            if(this.blockArray[c]>=SOLIDLIMIT){
+            if(this.blockArray[c+CHUNKSIZE]>=SOLIDLIMIT && (y+1) < CHUNKSIZE ){
               //vertices = vertices.concat(this.getPlaneVerticesYn(x,y,z));
               //cubeVertexIndices = this.addVertexIndices(cubeVertexIndices);
               //vertexNormals = this.addVertexNormal(vertexNormals, 0.0, 1.0, 0.0);
@@ -246,7 +248,7 @@ export class Chunk{
               vertexNormalsIndex += 3*4;
               cubeVertexIndicesIndex += 6;
             }
-            if(this.blockArray[c]>=SOLIDLIMIT){
+            if(this.blockArray[c-CHUNKSIZE]>=SOLIDLIMIT && (y-1) >= 0){
               //vertices = vertices.concat(this.getPlaneVerticesYp(x,y,z));
               //cubeVertexIndices = this.addVertexIndices(cubeVertexIndices);
               //vertexNormals = this.addVertexNormal(vertexNormals, 0.0, -1.0, 0.0);
@@ -259,7 +261,7 @@ export class Chunk{
               vertexNormalsIndex += 3*4;
               cubeVertexIndicesIndex += 6;
             }
-            if(this.blockArray[c]>=SOLIDLIMIT){
+            if(this.blockArray[c+CHUNKSIZE*CHUNKSIZE]>=SOLIDLIMIT && (z+1) < CHUNKSIZE ){
               //vertices = vertices.concat(this.getPlaneVerticesZn(x,y,z));
               //cubeVertexIndices = this.addVertexIndices(cubeVertexIndices);
               //vertexNormals = this.addVertexNormal(vertexNormals, 0.0, 0.0, 1.0);
@@ -272,7 +274,7 @@ export class Chunk{
               vertexNormalsIndex += 3*4;
               cubeVertexIndicesIndex += 6;
             }
-            if(this.blockArray[c]>=SOLIDLIMIT){
+            if(this.blockArray[c-CHUNKSIZE*CHUNKSIZE]>=SOLIDLIMIT && (z-1) >= 0){
               //vertices = vertices.concat(this.getPlaneVerticesZp(x,y,z));
               //cubeVertexIndices = this.addVertexIndices(cubeVertexIndices);
               //vertexNormals = this.addVertexNormal(vertexNormals, 0.0, 0.0, -1.0);
@@ -287,25 +289,13 @@ export class Chunk{
             }
 
           } else {
+          	
             //element is 'solid', check whether it touches 'the void'
-            if(this.blockArray[c]===undefined){
+            if((x-1)<0){
               //vertices = vertices.concat(this.getPlaneVerticesXp(x+1,y,z));
               //cubeVertexIndices = this.addVertexIndices(cubeVertexIndices);
               //vertexNormals = this.addVertexNormal(vertexNormals, 1.0, 0.0, 0.0);
-              vertices.set(this.getPlaneVerticesXp(x+1,y,z), verticesIndex);
-              vertexNormals.set([-1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0], vertexNormalsIndex);
-              cubeVertexIndices.set([verticesIndex/3+0, verticesIndex/3+1, 
-                          verticesIndex/3+2, verticesIndex/3+0, 
-                          verticesIndex/3+2, verticesIndex/3+3], cubeVertexIndicesIndex);
-              verticesIndex += 12;
-              vertexNormalsIndex += 3*4;
-              cubeVertexIndicesIndex += 6;
-            }
-            if(this.blockArray[c]===undefined){
-              //vertices = vertices.concat(this.getPlaneVerticesXn(x-1,y,z));
-              //cubeVertexIndices = this.addVertexIndices(cubeVertexIndices);
-              //vertexNormals = this.addVertexNormal(vertexNormals, -1.0, 0.0, 0.0);
-              vertices.set(this.getPlaneVerticesXn(x-1,y,z), verticesIndex);
+              vertices.set(this.getPlaneVerticesXp(x,y,z), verticesIndex);
               vertexNormals.set([1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0], vertexNormalsIndex);
               cubeVertexIndices.set([verticesIndex/3+0, verticesIndex/3+1, 
                           verticesIndex/3+2, verticesIndex/3+0, 
@@ -314,12 +304,12 @@ export class Chunk{
               vertexNormalsIndex += 3*4;
               cubeVertexIndicesIndex += 6;
             }
-            if(this.blockArray[c]===undefined){
-              //vertices = vertices.concat(this.getPlaneVerticesYp(x,y+1,z));
+            if((x+1)>=CHUNKSIZE){
+              //vertices = vertices.concat(this.getPlaneVerticesXn(x-1,y,z));
               //cubeVertexIndices = this.addVertexIndices(cubeVertexIndices);
-              //vertexNormals = this.addVertexNormal(vertexNormals, 0.0, 1.0, 0.0);
-              vertices.set(this.getPlaneVerticesYp(x,y+1,z), verticesIndex);
-              vertexNormals.set([0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0], vertexNormalsIndex);
+              //vertexNormals = this.addVertexNormal(vertexNormals, -1.0, 0.0, 0.0);
+              vertices.set(this.getPlaneVerticesXn(x,y,z), verticesIndex);
+              vertexNormals.set([-1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0], vertexNormalsIndex);
               cubeVertexIndices.set([verticesIndex/3+0, verticesIndex/3+1, 
                           verticesIndex/3+2, verticesIndex/3+0, 
                           verticesIndex/3+2, verticesIndex/3+3], cubeVertexIndicesIndex);
@@ -327,11 +317,11 @@ export class Chunk{
               vertexNormalsIndex += 3*4;
               cubeVertexIndicesIndex += 6;
             }
-            if(this.blockArray[c]===undefined){
-              //vertices = vertices.concat(this.getPlaneVerticesYn(x,y-1,z));
+            if((y-1)<0){
+              //vertices = vertices.concat(this.getPlaneVerticesYp(x,y+1,z));
               //cubeVertexIndices = this.addVertexIndices(cubeVertexIndices);
-              //vertexNormals = this.addVertexNormal(vertexNormals, 0.0, -1.0, 0.0);
-              vertices.set(this.getPlaneVerticesYn(x,y-1,z), verticesIndex);
+              //vertexNormals = this.addVertexNormal(vertexNormals, 0.0, 1.0, 0.0);
+              vertices.set(this.getPlaneVerticesYp(x,y,z), verticesIndex);
               vertexNormals.set([0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0], vertexNormalsIndex);
               cubeVertexIndices.set([verticesIndex/3+0, verticesIndex/3+1, 
                           verticesIndex/3+2, verticesIndex/3+0, 
@@ -340,12 +330,12 @@ export class Chunk{
               vertexNormalsIndex += 3*4;
               cubeVertexIndicesIndex += 6;
             }
-            if(this.blockArray[c]===undefined){
-              //vertices = vertices.concat(this.getPlaneVerticesZp(x,y,z+1.0));
+            if((y+1)>=CHUNKSIZE){
+              //vertices = vertices.concat(this.getPlaneVerticesYn(x,y-1,z));
               //cubeVertexIndices = this.addVertexIndices(cubeVertexIndices);
-              //vertexNormals = this.addVertexNormal(vertexNormals, 0.0, 0.0, 1.0);
-              vertices.set(this.getPlaneVerticesZp(x,y,z+1), verticesIndex);
-              vertexNormals.set([0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0], vertexNormalsIndex);
+              //vertexNormals = this.addVertexNormal(vertexNormals, 0.0, -1.0, 0.0);
+              vertices.set(this.getPlaneVerticesYn(x,y,z), verticesIndex);
+              vertexNormals.set([0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0], vertexNormalsIndex);
               cubeVertexIndices.set([verticesIndex/3+0, verticesIndex/3+1, 
                           verticesIndex/3+2, verticesIndex/3+0, 
                           verticesIndex/3+2, verticesIndex/3+3], cubeVertexIndicesIndex);
@@ -353,12 +343,25 @@ export class Chunk{
               vertexNormalsIndex += 3*4;
               cubeVertexIndicesIndex += 6;
             }
-            if(this.blockArray[c]===undefined){
+            if((z-1)<0){
+              //vertices = vertices.concat(this.getPlaneVerticesZp(x,y,z+1.0));
+              //cubeVertexIndices = this.addVertexIndices(cubeVertexIndices);
+              //vertexNormals = this.addVertexNormal(vertexNormals, 0.0, 0.0, 1.0);
+              vertices.set(this.getPlaneVerticesZp(x,y,z), verticesIndex);
+              vertexNormals.set([0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0], vertexNormalsIndex);
+              cubeVertexIndices.set([verticesIndex/3+0, verticesIndex/3+1, 
+                          verticesIndex/3+2, verticesIndex/3+0, 
+                          verticesIndex/3+2, verticesIndex/3+3], cubeVertexIndicesIndex);
+              verticesIndex += 12;
+              vertexNormalsIndex += 3*4;
+              cubeVertexIndicesIndex += 6;
+            }
+            if((z+1)>=CHUNKSIZE){
               //vertices = vertices.concat(this.getPlaneVerticesZn(x,y,z-1.0));
               //cubeVertexIndices = this.addVertexIndices(cubeVertexIndices);
               //vertexNormals = this.addVertexNormal(vertexNormals, 0.0, 0.0, -1.0);
-              vertices.set(this.getPlaneVerticesZn(x,y,z-1), verticesIndex);
-              vertexNormals.set([0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0], vertexNormalsIndex);
+              vertices.set(this.getPlaneVerticesZn(x,y,z), verticesIndex);
+              vertexNormals.set([0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0], vertexNormalsIndex);
               cubeVertexIndices.set([verticesIndex/3+0, verticesIndex/3+1, 
                           verticesIndex/3+2, verticesIndex/3+0, 
                           verticesIndex/3+2, verticesIndex/3+3], cubeVertexIndicesIndex);
@@ -422,9 +425,10 @@ export class Chunk{
     console.log('vertices length, ', vertices.length);
     console.log('vertexnormals length, ', vertexNormals.length);
     console.log('indices length, ', cubeVertexIndices.length);
-    console.log('vertices', vertices);
-    console.log('normals', vertexNormals);
-    console.log('indices', cubeVertexIndices);
+    //console.log('vertices', vertices);
+    //console.log('normals', vertexNormals);
+    //console.log('indices', cubeVertexIndices);
+    //console.log('blockarray, ', this.blockArray);
 
     // activate the new vertex buffer for editing
     this.cubeVertexPositionBuffer = this.gl.createBuffer();
