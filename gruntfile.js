@@ -13,7 +13,8 @@ module.exports = function(grunt){
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-watch');
-
+  grunt.loadNpmTasks('grunt-typescript');
+-
   grunt.initConfig({
 
     // because awesome people use ES6
@@ -46,11 +47,17 @@ module.exports = function(grunt){
 				files: [{
 					expand: true,
 					cwd:'frontend/src/',
-					src: ['**/*.html', '*.html', 'bower_components/**/*.js', 'angular2/*.js', 'angular2/**/*.js', 'angular2/*.map', 'angular2/**/*.map'],
+					src: ['bower_components/**/*.js', 'angular2/*.js', 'angular2/**/*.js', 'angular2/*.map', 'angular2/**/*.map'],
 					dest: 'frontend/build/'
 					}]
 			
 			},
+      typescriptVersion: {
+        files: [{
+          src: 'frontend/src/index_ts.html',
+          dest: 'frontend/build/index.html'
+          }]
+      },
 		},
 
     watch: {
@@ -61,6 +68,13 @@ module.exports = function(grunt){
       livereload: {
         files: ['frontend/src/*.html', 'frontend/src/js/*.js', 'frontend/src/js/**/*.js'],
         tasks: ['traceur', 'copy:dev'],
+        options: {
+          livereload: true
+        }
+      },
+      typescriptVersion: {
+        files: ['frontend/src/*.html', 'frontend/src/ts/*.ts', 'frontend/src/ts/**/*.ts'],
+        tasks: ['typescript', 'copy:typescriptVersion'],
         options: {
           livereload: true
         }
@@ -79,7 +93,21 @@ module.exports = function(grunt){
       }
     },
 
+    typescript: {
+      base: {
+        src: ['frontend/src/ts/**/*.ts'],
+        dest: 'frontend/build',
+        options: {
+          module: 'amd', //or commonjs 
+          target: 'es5', //or es3 
+          sourceMap: true,
+          declaration: true
+        }
+      }
+    },
+
   });
 
-  grunt.registerTask('default', ['traceur', 'copy:dev', 'connect:dev', 'watch']);
+  grunt.registerTask('serveES6', ['traceur', 'copy:dev', 'connect:dev', 'watch']);
+  grunt.registerTask('default', ['typescript', 'copy:typescriptVersion', 'connect:dev', 'watch:typescriptVersion'])
 };

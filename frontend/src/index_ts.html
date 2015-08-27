@@ -1,0 +1,89 @@
+<html>
+		
+<head>
+	
+
+	<script id="shader-fs" type="x-shader/x-fragment">
+      precision mediump float;
+
+      //varying vec3 vLightWeighting
+
+      void main(void) {
+        gl_FragColor = vec4(1.0, 0.7, 0.9, 1.0);
+      }
+    </script>
+
+    <script id="shader-vs" type="x-shader/x-vertex">
+      attribute vec3 aVertexPosition;
+      //attribute vec3 aVertexNormal;
+
+      uniform mat4 uMVMatrix;
+      uniform mat4 uPMatrix;
+      //uniform mat3 uNMatrix;
+
+      //uniform vec3 uAmbientColor;
+
+      //uniform vec3 uLightingDirection;
+      //uniform vec3 uDirectionalColor;
+
+      //uniform bool uUseLighting;
+
+      //varying vec3 vLightWeighting;
+
+      void main(void) {
+        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+
+        //vec3 transformedNormal = uNMatrix * aVertexNormal;
+        //    float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
+        //    vLightWeighting = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+      }
+    </script>
+
+    <script id="shader-fs-light" type="x-shader/x-fragment">
+      precision mediump float;
+
+      varying vec3 vLightWeighting;
+
+      void main(void) {
+        gl_FragColor = vec4( vec3(1.0, 1.0, 1.0) * vLightWeighting, 1.0);
+      }
+    </script>
+
+    <script id="shader-vs-light" type="x-shader/x-vertex">
+      attribute vec3 aVertexPosition;
+      attribute vec3 aVertexNormal;
+
+      uniform mat4 uMVMatrix;
+      uniform mat4 uPMatrix;
+      uniform mat3 uNMatrix;
+
+      uniform vec3 uAmbientColor;
+
+      uniform vec3 uLightingDirection;
+      uniform vec3 uDirectionalColor;
+
+      uniform bool uUseLighting;
+
+      varying vec3 vLightWeighting;
+
+      void main(void) {
+        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+
+        vec3 transformedNormal = uNMatrix * aVertexNormal;
+        float directionalLightWeighting = max(dot(aVertexNormal, uLightingDirection), 0.0);
+        vLightWeighting = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+        //vLightWeighting = uDirectionalColor * dot(aVertexNormal, uLightingDirection);
+      }
+
+    </script>
+
+</head>
+<body>
+TYPESCRIPT
+  <center><canvas id="GLCanvas" style="border: none;" width="800" height="700"></canvas></center>
+  <script type="text/javascript" src="bootstrap/Gameloop.js"></script>
+  <script type="text/javascript" src="render/RenderService.js"></script>
+  <script type="text/javascript" src="render/GLContext.js"></script>
+  <script type="text/javascript" src="Webcraft.js"></script>
+</body>
+</html>
