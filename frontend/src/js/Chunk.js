@@ -12,30 +12,40 @@ import 'frontend/src/js/lib/noise.js';
 
 export class Chunk{
 
-  constructor(gl, x =0, y =0, z =-1, width =1, shader){
+  constructor(gl, x =0, y =0, z =-1, pitch =0, yaw =0, roll =0, width =1, shader){
     this.gl = gl.gl;
     this.renderer = gl;
     //this.shaderProgram = this.gl.shaderProgram;
     this.mvMatrix = mat4.create();
     this.position = new Point3(x, y, z);
+    this.rotation = vec3.fromValues(pitch, yaw, roll);
     this.width = width;
     this.shader = shader;
     mat4.identity( this.mvMatrix );
-
     this.currentTime = new Date().getTime();
     console.log('initializing object');
-    
     this.initShaders();
-
+    this.dosomethingelsewithShader();
+    typeof();
     var elapsed = new Date().getTime() - this.currentTime;
     this.currentTime = new Date().getTime();
     console.log('initialized shaders-', elapsed);
-
     this.blockArray = [];
     this.initBuffers();
+    initBuffers = function(){
+      // Blabla
+      // Nog eens babla
+      var x = x;
+      $scope.variable = 'a_variable_on_scope';
 
-    
-
+      doSomething
+        .then(function(){
+          //
+        })
+        .error(function(){
+          dsfldfs
+        });
+    }
 
     gl.addVisObject(this);
   }
@@ -43,14 +53,11 @@ export class Chunk{
   generateBlockArray(size, val){
     this.blockArray = [];
     this.blockArraySize = size;
-    //var noiseData = new SimplexNoise();
-    
 
     for(var c=0; c<size*size*size; c++){
-      var z = Math.floor(c/ (size*size));
-      var y = Math.floor( (c- z * size * size) / (size) );
-      var x = c - y * size - z * size * size;
-      //console.log('xyz: ', [x, y, z]);
+      var z = Math.floor(c/ (size*size)) + this.position.z*1.5;
+      var y = Math.floor( (c- z * size * size) / (size) ) +this.position.y*1.5;
+      var x = c - y * size - z * size * size + this.position.x*1.5;
       
       this.blockArray.push(noise.perlin3(x/20.0, y/20.0, z/20.0));
     }
@@ -65,7 +72,7 @@ export class Chunk{
         }
       }
     } */
-    console.log('blockArray length', this.blockArray.length);
+    //console.log('blockArray ', this.blockArray);
   }
 
   getBlockArrayElement(x,y,z){
@@ -171,7 +178,7 @@ export class Chunk{
 
   initBuffers(){
     var SOLIDLIMIT = 0.0;
-    var CHUNKSIZE = 10.0;
+    var CHUNKSIZE = 35.0;
 
     this.generateBlockArray(CHUNKSIZE, 0);
 
@@ -469,6 +476,7 @@ export class Chunk{
       this.setMatrixUniforms();
       this.resetMVMatrix();
       this.renderer.absToRel(this.mvMatrix);
+      this.rotate();
       this.translate();
       this.scale();
 
@@ -526,7 +534,17 @@ export class Chunk{
     mat4.translate(this.mvMatrix, this.mvMatrix, vec3.fromValues(this.position.x, this.position.y, this.position.z));
   }
 
+  rotate(){
+    mat4.rotateX(this.mvMatrix, this.mvMatrix, this.rotation[0]);
+    mat4.rotateY(this.mvMatrix, this.mvMatrix, this.rotation[1]);
+    mat4.rotateZ(this.mvMatrix, this.mvMatrix, this.rotation[2]);
+  }
+
   scale(){
     mat4.scale(this.mvMatrix, this.mvMatrix, vec3.fromValues(this.width/2, this.width/2, this.width/2));
+  }
+
+  turn(pitch, yaw, roll) {
+    this.rotation = vec3.add(this.rotation, this.rotation, vec3.fromValues(pitch, yaw, roll));
   }
 }

@@ -122,6 +122,7 @@ export class WebGL{
 		}
 
 		// Read in the shader
+    // Blabla
 		var str = '';
 		var k = shaderScript.firstChild;
 		while (k) {
