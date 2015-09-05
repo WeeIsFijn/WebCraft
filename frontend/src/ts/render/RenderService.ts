@@ -37,7 +37,19 @@ module Webcraft {
 			this.ctx.get().useProgram(this.shaderProgram);
 			
 			// create shader attributes
+			this.shaderProgram.vertexPositionAttribute = this.ctx.get().getAttribLocation(this.shaderProgram, 'aVertexPosition');
+			this.ctx.get().enableVertexAttribArray(this.shaderProgram.vertexPositionAttribute);
 			
+			this.shaderProgram.vertexNormalAttribute = this.ctx.get().getAttribLocation(this.shaderProgram, 'aVertexNormal');
+			this.ctx.get().enableVertexAttribArray(this.shaderProgram.vertexNormalAttribute);
+			
+			this.shaderProgram.pMatrixUniform 			= this.ctx.get().getUniformLocation(this.shaderProgram, 'uPMatrix');
+			this.shaderProgram.mvMatrixUniform 			= this.ctx.get().getUniformLocation(this.shaderProgram, 'uMVMatrix');
+			this.shaderProgram.nMatrixUniform 			= this.ctx.get().getUniformLocation(this.shaderProgram, "uNMatrix");
+			this.shaderProgram.useLightingUniform 		= this.ctx.get().getUniformLocation(this.shaderProgram, "uUseLighting");
+			this.shaderProgram.ambientColorUniform 		= this.ctx.get().getUniformLocation(this.shaderProgram, "uAmbientColor");
+			this.shaderProgram.lightingDirectionUniform = this.ctx.get().getUniformLocation(this.shaderProgram, "uLightingDirection");
+			this.shaderProgram.directionalColorUniform 	= this.ctx.get().getUniformLocation(this.shaderProgram, "uDirectionalColor");
 		};
 		
 		/* TODO: Remove Buffer logic from this class */
