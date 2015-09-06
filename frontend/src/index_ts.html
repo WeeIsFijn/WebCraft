@@ -15,7 +15,7 @@
 
     <script id="shader-vs" type="x-shader/x-vertex">
       attribute vec3 aVertexPosition;
-      //attribute vec3 aVertexNormal;
+      attribute vec3 aVertexNormal;
 
       uniform mat4 uMVMatrix;
       uniform mat4 uPMatrix;
@@ -45,7 +45,8 @@
       varying vec3 vLightWeighting;
 
       void main(void) {
-        gl_FragColor = vec4( vec3(1.0, 1.0, 1.0) * vLightWeighting, 1.0);
+        //gl_FragColor = vec4( vec3(1.0, 1.0, 1.0) * vLightWeighting, 1.0);
+        gl_FragColor = vec4( 1.0, 1.0, 1.0, 0.5);
       }
     </script>
 
@@ -81,6 +82,8 @@
 <body>
 TYPESCRIPT
   <center><canvas id="GLCanvas" style="border: none;" width="800" height="700"></canvas></center>
+  <script type="text/javascript" src="math/matrix.js"></script>
+
   <script type="text/javascript" src="bootstrap/Gameloop.js"></script>
   <script type="text/javascript" src="render/RenderService.js"></script>
   <script type="text/javascript" src="render/GLContext.js"></script>

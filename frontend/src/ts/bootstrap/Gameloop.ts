@@ -11,7 +11,12 @@ module Webcraft {
 		}
 
 		public start() {
-
+			var renderer = this.renderer;
+			var doTick = function () {
+				renderer.draw();
+				requestAnimationFrame( doTick );
+			}
+			doTick();
 		}
 	}
 }

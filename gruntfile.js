@@ -56,6 +56,11 @@ module.exports = function(grunt){
         files: [{
           src: 'frontend/src/index_ts.html',
           dest: 'frontend/build/index.html'
+          }, {
+            src: '**/*.js',
+            dest: 'frontend/build/',
+            cwd: 'frontend/src/ts/',
+            expand: true,
           }]
       },
 		},
